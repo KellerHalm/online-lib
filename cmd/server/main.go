@@ -38,7 +38,7 @@ func main() {
 	r.PATCH("/books/:id", middleware.Auth(cfg.JWTSecret), books.Update)
 	r.DELETE("/books/:id", middleware.Auth(cfg.JWTSecret), books.Delete)
 
-	r.StaticFile("/swagger	", "./docs/index.html")
+	r.StaticFile("/swagger", "./docs/index.html")
 	r.StaticFile("/swagger/openapi.json", "./docs/openapi.json")
 
 	log.Printf("API доступен на http://localhost:%s", cfg.Port)
