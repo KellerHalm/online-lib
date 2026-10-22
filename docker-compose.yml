@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER:-lib}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-lib_password}
+      POSTGRES_DB: ${DB_NAME:-library}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-lib} -d ${DB_NAME:-library}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  app:
+    build: .
+    environment:
+      PORT: ${PORT:-3000}
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_USER: ${DB_USER:-lib}
+      DB_PASSWORD: ${DB_PASSWORD:-lib_password}
+      DB_NAME: ${DB_NAME:-library}
+      JWT_SECRET: ${JWT_SECRET:-dev_secret_change_me}
+      CORS_ALLOWED_ORIGIN: ${CORS_ALLOWED_ORIGIN:-http://localhost:5173}
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:
